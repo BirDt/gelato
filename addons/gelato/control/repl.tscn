@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://8n7ditjq0tdx"]
+
+[ext_resource type="Script" path="res://addons/gelato/control/output.gd" id="1_q5g8r"]
+[ext_resource type="Script" path="res://addons/gelato/control/input.gd" id="2_shioy"]
+
+[node name="repl" type="Control"]
+custom_minimum_size = Vector2(0, 192)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="split" type="VSplitContainer" parent="margin"]
+layout_mode = 2
+split_offset = 600
+
+[node name="output" type="TextEdit" parent="margin/split"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+editable = false
+script = ExtResource("1_q5g8r")
+
+[node name="input" type="LineEdit" parent="margin/split"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+script = ExtResource("2_shioy")
+
+[connection signal="gui_input" from="margin/split/input" to="margin/split/input" method="_on_gui_input"]
