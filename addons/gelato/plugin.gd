@@ -4,7 +4,7 @@ extends EditorPlugin
 var repl = preload("res://addons/gelato/control/repl.tscn").instantiate()
 
 func _enter_tree():
-	add_control_to_bottom_panel(repl, "REPL")
+	add_control_to_bottom_panel(repl, "Gelato")
 
 
 func _exit_tree():
