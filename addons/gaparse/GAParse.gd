@@ -9,6 +9,25 @@ static func eof() -> Callable:
 		else:
 			return {success=false}
 
+# Returns a parser matching any character, except ""
+static func any() -> Callable:
+	return func(input: String) -> Dictionary:
+		if input == "":
+			return {success=false}
+		else:
+			return {success=true, result=input[0], rest=input.substr(1)}
+
+# Returns a parser matching any character, except "" and the given parser
+static func any_except(parser: Callable) -> Callable:
+	return func(input: String) -> Dictionary:
+		if input == "":
+			return {success=false}
+			
+		var res = parser.call(input)
+		if not res["success"]:
+			return {success=true, result=input[0], rest=input.substr(1)}
+		return {success=false}
+
 # Returns a parser matching a single character
 static func char(mchar: String) -> Callable:
 	assert(len(mchar) == 1, "char parser must take a string argument of exactly length 1")
@@ -23,7 +42,7 @@ static func chars(mchars: Array[String]) -> Callable:
 	var char_matchers: Array[Callable] = []
 	for c in mchars:
 		char_matchers.push_back(GAParse.char(c))
-	return GAParse.any(char_matchers)
+	return GAParse.either(char_matchers)
 
 # Returns a parser matching a word or substring
 static func word(mword: String) -> Callable:
@@ -35,7 +54,7 @@ static func word(mword: String) -> Callable:
 
 # Returns a parser which returns the result of the first matching parser it takes
 # If string `a` is matched by parser `y` and `z`, `any([x, y, z])` will return the result of `y`
-static func any(parsers: Array[Callable]) -> Callable:
+static func either(parsers: Array[Callable]) -> Callable:
 	return func(input: String) -> Dictionary:
 		for p in parsers:
 			var res = p.call(input)
@@ -56,6 +75,18 @@ static func seq(parsers: Array[Callable]) -> Callable:
 			else:
 				return {success=false}
 		return {success=true, result=result, rest=rest}
+
+# Returns a parser matching (and returning) another parser, before hitting the end of file
+static func eof_seq(parser: Callable) -> Callable:
+	return func(input: String) -> Dictionary:
+		var result = parser.call(input)
+		if not result["success"]:
+			return {success=false}
+		var eof_parser = eof()
+		var hit_eof = eof_parser.call(result["rest"])
+		if hit_eof["success"]:
+			return result
+		return {success=false}
 
 # Returns a parser matching it's input parser 1 or * times
 static func one_or_many(parser: Callable) -> Callable:
