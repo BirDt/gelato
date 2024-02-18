@@ -16,4 +16,4 @@ config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gelato/plugin.cfg")
+enabled=PackedStringArray("res://addons/gelato/plugin.cfg", "res://addons/gut/plugin.cfg")
