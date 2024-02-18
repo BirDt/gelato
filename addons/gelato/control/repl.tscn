@@ -34,9 +34,18 @@ layout_mode = 2
 editable = false
 script = ExtResource("1_q5g8r")
 
-[node name="input" type="LineEdit" parent="margin/split"]
+[node name="HSplitContainer" type="HSplitContainer" parent="margin/split"]
+layout_mode = 2
+split_offset = 1040
+
+[node name="input" type="LineEdit" parent="margin/split/HSplitContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 script = ExtResource("2_shioy")
 
-[connection signal="gui_input" from="margin/split/input" to="margin/split/input" method="_on_gui_input"]
+[node name="clear" type="Button" parent="margin/split/HSplitContainer"]
+layout_mode = 2
+text = "CLEAR"
+
+[connection signal="gui_input" from="margin/split/HSplitContainer/input" to="margin/split/HSplitContainer/input" method="_on_gui_input"]
+[connection signal="pressed" from="margin/split/HSplitContainer/clear" to="margin/split/output" method="clear"]
