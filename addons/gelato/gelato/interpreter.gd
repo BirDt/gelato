@@ -113,17 +113,46 @@ func dot_identifier(components: Array, callable):
 		else:
 			return eval_applicator(exec)
 
+func single_dot_identifier(components: Array):
+	var exec = "initial"
+	for i in components:
+		exec += ".%s" % i.value
+	exec += "("
+	return func(args: Array):
+		assert(args[0], "Partial dot identifier must have at least 1 argument")
+		var obj = args[0]
+		var arg = 1
+		var args_str = []
+		for i in args.slice(1):
+			exec += "%s," % ("arg%s" %arg)
+			args_str.append("arg%s" %arg)
+			arg += 1
+		exec = exec.trim_suffix(",")
+		exec += ")"
+		var bindings = ["initial"]
+		bindings.append_array(args_str)
+		print(exec)
+		var err = expr.parse(exec, bindings)
+		assert(err == OK, expr.get_error_text())
+		var exec_bindings = [obj]
+		exec_bindings.append_array(args.slice(1))
+		err = expr.execute(exec_bindings, self)
+		assert(not expr.has_execute_failed(), expr.get_error_text())
+		return err
+
 func apply(list: Array):
 	if len(list) == 0:
 		return []
 	var contents = [execute(list[0], true)]
 	contents.append_array(list.slice(1).map(execute))
+	print(contents)
 	if len(list) > 1:
 		return contents[0].call(contents.slice(1))
 	return contents[0].call([])
 
 func execute(expression: Dictionary, callable: bool=false):
 	assert(expression.has_all(["type", "value"]), "Interpreter node is missing either type or value")
+	print(expression)
 	match expression["type"]:
 		"string", "boolean", "number":
 			return expression["value"]
@@ -140,6 +169,9 @@ func execute(expression: Dictionary, callable: bool=false):
 				assert(false, "Unbound identifier: %s" % expression["value"])
 		"dot_identifier":
 			return dot_identifier(expression["value"], callable)
+		"single_dot_identifier":
+			assert(callable, "Single dot identifiers are only valid in callable position")
+			return single_dot_identifier(expression["value"])
 		"operation":
 			return symbol_table[expression["value"]]
 

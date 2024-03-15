@@ -293,7 +293,7 @@ func dot_identifier(input: String):
 	for i in outputs:
 		gdscript += "%s." % i["gdscript"]
 	
-	return {success=true, result=result.trim_suffix("."), rest=rest, value=outputs, gdscript=gdscript.trim_suffix("."), type="dot_identifier"}
+	return {success=true, result=result.trim_suffix("."), rest=rest, value=outputs, gdscript=gdscript.trim_suffix("."), type="dot_identifier" if not is_single_dot["success"] else "single_dot_identifier"}
 
 var identifier = GAParse.either([dot_identifier, normal_identifier])
 
